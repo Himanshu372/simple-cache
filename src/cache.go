@@ -32,6 +32,7 @@ func (lc *LocalCache) Set(key string, val string) {
 	lc.Resize()
 	// Run eviction and store latest get key
 	lc.c[key] = val
+	lc.ru[key] = 0
 	return
 }
 
@@ -54,7 +55,7 @@ type KeyUsedCount struct {
 }
 
 func (lc *LocalCache) evict() {
-	// Eviction is based on least recently used
+	// Eviction is based on LRU
 	kuc := make([]*KeyUsedCount, 0)
 	for k, count := range lc.ru {
 		kuc = append(kuc, &KeyUsedCount{k, count})
@@ -62,6 +63,7 @@ func (lc *LocalCache) evict() {
 	sort.Slice(kuc, func(i, j int) bool {
 		return kuc[i].ruc < kuc[j].ruc
 	})
-	lc.Delete(kuc[0].key)
+	delete(lc.c, kuc[0].key)
+	delete(lc.ru, kuc[0].key)
 	return
 }
