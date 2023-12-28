@@ -1,2 +1,2 @@
 # simpleCache
-A simple in memory cache in Go
+A simple in-memory cache in Go
